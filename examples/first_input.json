@@ -1,0 +1,44 @@
+{
+  "pupils": [
+    {
+      "Id": 12,
+      "Bundesland": "Hamburg",
+      "Klassenstufe": 6,
+      "Fächer": ["Deutsch", "Mathematik"]
+    },
+    {
+      "Id" : 7,
+      "Bundesland": "Rheinland-Pfalz",
+      "Klassenstufe": 5,
+      "Fächer": ["Geschichte", "Sozialkunde"]
+    },
+    {
+      "Id": 5,
+      "Bundesland": "Nordrhein-Westfahlen",
+      "Klassenstufe": 11,
+      "Fächer": ["Mathematik"]
+    }
+  ],
+  "students": [
+    {
+      "Id": 27,
+      "Bundesland": "Nordrhein-Westfahlen",
+      "Fächer": [
+        {
+          "Fach": "Deutsch",
+          "Klassenstufe": [ 5, 6, 7, 8 ]
+        }
+      ]
+    },
+    {
+      "Id": 15,
+      "Bundesland": "Hamburg",
+      "Fächer": [
+    {
+      "Fach": "Mathematik",
+      "Klassenstufe": [ 5, 6, 10,11,12 ]
+    }
+  ]
+    }
+  ]
+}
