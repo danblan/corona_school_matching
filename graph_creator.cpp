@@ -49,7 +49,19 @@ namespace CS{
         if (s == "informatik") return Informatik;
         if (s == "erdkunde") return Erdkunde;
         if (s == "latein") return Latein;
-
+        if (s == "wirtschaft") return Wirtschaft;
+        if (s == "politik") return Politik;
+        if (s == "philosophie") return Philosophie;
+        if (s == "musik") return Musik;
+        if (s == "kunst") return Kunst;
+        if (s == "pädagogik") return Paedagogik;
+        if (s == "religion") return Religion;
+        if (s == "altgriechisch") return Altgriechisch;
+        if (s == "italienisch") return Italienisch;
+        if (s == "russisch") return Russisch;
+        if (s == "niederländisch") return Niederlaendisch;
+        if (s == "chinesisch") return Chinesisch;
+        else std::cout<<"subject not identified, name was"<<s<<std::endl;
     }
 
     //TODO: Add some safety checks in this function
