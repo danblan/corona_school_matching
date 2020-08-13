@@ -65,38 +65,45 @@ namespace CS{
     }
 
     //TODO: Add some safety checks in this function
-    void GraphCreator::init_from_json(std::ifstream & input) {
-        json data_file;
+    void GraphCreator::init_from_json(std::ifstream & pupil_file, std::ifstream & student_file) {
+        json pupil_data_file, student_data_file;
         //Initialize the json object:
-        input >> data_file;
-        if (data_file.find("pupils") == std::end(data_file)) {
-            throw std::invalid_argument(std::string("Input JSON file has no pupil field!"));
-        } else if (data_file.find("students") == std::end(data_file)) {
-            throw std::invalid_argument(std::string("Input JSON file has no student field"));
-        }
+        pupil_file >> pupil_data_file;
+        student_file >> student_data_file;
         //Build pupils and students with the data in the json file.
-        _nodes.create_pupils(data_file["pupils"].size());
+        _nodes.create_pupils(pupil_data_file.size());
         unsigned pupil_count{0u};
-        for (auto const & pupil_json_data : data_file["pupils"]) {
+        for (auto const & pupil_json_data : pupil_data_file) {
             auto & pupil_data = _nodes.pupil(pupil_count).data();
-            pupil_data.bundesland = parse_bundesland(pupil_json_data["Bundesland"]);
-            pupil_data.input_file_id = pupil_json_data["Id"];
-            pupil_data.grade = pupil_json_data["Klassenstufe"];
-            for (auto const & fach : pupil_json_data["Fächer"]) {
-                pupil_data.requested_subjects.emplace_back(parse_subject(fach));
+            ///bundesland not yet featured
+            //pupil_data.bundesland = parse_bundesland(pupil_json_data["Bundesland"]);
+            pupil_data.input_file_id = pupil_json_data["id"];
+            pupil_data.grade = pupil_json_data["grade"];
+            for (auto const & fach : pupil_json_data["subjects"]) {
+                pupil_data.requested_subjects.emplace_back(parse_subject(fach["name"]));
             }
             pupil_count++;
         }
-        _nodes.create_college_students(data_file["students"].size());
+        _nodes.create_college_students(student_data_file.size());
         unsigned student_count{0u};
-        for (auto const student_json_data : data_file["students"]) {
+        for (auto const & student_json_data : student_data_file) {
             auto & student_data = _nodes.college_student(student_count).data();
-            student_data.bundesland = parse_bundesland(student_json_data["Bundesland"]);
-            student_data.input_file_id = student_json_data["Id"];
-            for (auto const & offered_sub : student_json_data["Fächer"]) {
-                Subject const subject = parse_subject(offered_sub["Fach"]);
+            //student_data.bundesland = parse_bundesland(student_json_data["Bundesland"]);
+            student_data.input_file_id = student_json_data["id"];
+            for (auto const & offered_sub : student_json_data["subjects"]) {
+                Subject const subject = parse_subject(offered_sub["name"]);
                 GradeRange range;
-                for (auto const & grade: offered_sub["Klassenstufe"]) {
+                //Currently only with min and max
+                unsigned min,max;
+                if (offered_sub.find("grade") == std::end(offered_sub)) {
+                    //Assume that in this case we have all grades
+                    min = MIN_POSSIBLE_GRADE;
+                    max = MAX_POSSIBLE_GRADE;
+                } else {
+                    min = offered_sub["grade"]["min"];
+                    max = offered_sub["grade"]["max"];
+                }
+                for (unsigned grade = min; grade <= max; ++grade) {
                     range.grades.push_back(grade);
                 }
                 student_data.offered_subjects.push_back({subject, 1., range});
