@@ -21,11 +21,12 @@ namespace CS {
     public:
         /**
          * Main function of the Graph Creator.
-         * @param input A json file which describes the instance
-         * Given the json file this function constructs all students and pupils and
+         * @param pupil_file A json file which describes the pupils of the instance
+         * @param student_file A json file which described the students of the instance
+         * Given the json files this function constructs all students and pupils and
          * edges between them. Further, costs are initialized.
          */
-        void init_from_json(std::ifstream & input);
+        void init_from_json(std::ifstream & pupil_file, std::ifstream & student_file);
 
         /**
          * @return The id of the virtual source node s in the min cost flow instance.
