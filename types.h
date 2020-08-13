@@ -39,7 +39,19 @@ namespace CS {
         Latein,
         Erdkunde,
         Sozialkunde,
-        Geschichte
+        Geschichte,
+        Wirtschaft,
+        Politik,
+        Philosophie,
+        Musik,
+        Kunst,
+        Paedagogik,
+        Religion,
+        Altgriechisch,
+        Italienisch,
+        Russisch,
+        Niederlaendisch,
+        Chinesisch
     };
 
     ///Enum for all states of Germany
@@ -59,7 +71,8 @@ namespace CS {
         Sachsen,
         SachsenAnhalt,
         SchleswigHolstein,
-        Thueringen
+        Thueringen,
+        Invalid
     };
 
     ///Struct for a range of grades that are specified by a college student.
@@ -97,7 +110,7 @@ namespace CS {
         ///Interface for node data. It serves as a base class for student and pupil data.
         ///The idea is that it contains shared properties such as a field for the uuid and one for the state of germany.
         struct DataIF {
-            Bundesland bundesland;
+            Bundesland bundesland = Bundesland::Invalid;
             ID input_file_id;
         };
 
