@@ -11,8 +11,8 @@ namespace CS {
      * Simple struct for edges between pupils and students.
      */
     struct Edge {
-        ID const pupil_id;
-        ID const college_student_id;
+        ID  pupil_id;
+        ID  college_student_id;
         CostValue cost = 0.;
         Edge(ID p, ID c) : pupil_id{p}, college_student_id{c} {}
     };
