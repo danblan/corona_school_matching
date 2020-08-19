@@ -112,6 +112,7 @@ namespace CS {
         struct DataIF {
             Bundesland bundesland = Bundesland::Invalid;
             ID input_file_id;
+            unsigned waiting_days = 0;
         };
 
         inline explicit NodeIF(ID id): _id(id){ }
@@ -131,7 +132,7 @@ namespace CS {
             std::vector<OfferedSubject> offered_subjects;
         };
 
-        CollegeStudent(ID id);
+        explicit CollegeStudent(ID id);
 
         [[nodiscard]] inline bool accepts(const Pupil & pupil) const {
             if (_acceptance_function) {

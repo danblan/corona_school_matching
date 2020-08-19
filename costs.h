@@ -15,7 +15,8 @@ namespace CS{
      */
     enum CostType {
         BundeslandBonus,
-        FachUebereinstimmung
+        FachUebereinstimmung,
+        WaitingTimeBonus
     };
 
     /**
@@ -89,6 +90,13 @@ namespace CS{
                     }
                 }
                 return retval;
+            });
+        }
+
+        inline void add_waiting_time_bonus() {
+            add_cost_component(CostType::WaitingTimeBonus,
+                    [] (const CollegeStudent & student, const Pupil & pupil) {
+                return static_cast<CostType>(student.data().waiting_days + pupil.data().waiting_days);
             });
         }
     private:

@@ -121,6 +121,7 @@ namespace CS{
         //Initialize the cost components that are used currently:
         edge_cost_computer.add_bundesland_bonus();
         edge_cost_computer.add_fachuebereinstimmung();
+        edge_cost_computer.add_waiting_time_bonus();
         //Iterate over all edges and cache the costs which are computed by the edge cost computer.
         for (auto & edge : _edges){
             edge.cost = edge_cost_computer.compute_edge_cost(
