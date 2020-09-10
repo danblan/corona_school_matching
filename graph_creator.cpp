@@ -2,13 +2,15 @@
 #include "graph_creator.h"
 #include "nlohmann/json.hpp"
 #include <algorithm>
+#include <iomanip>
+
 using json = nlohmann::json;
 
-namespace CS{
+namespace CS {
     //Helper method to convert a string encoding a state into the suiting enum.
-    Bundesland  parse_bundesland(std::string bl) {
+    Bundesland parse_bundesland(std::string bl) {
         ///Convert the string to lower case:
-        std::for_each(bl.begin(), bl.end(), [](char & c){
+        std::for_each(bl.begin(), bl.end(), [](char &c) {
             c = std::tolower(c);
         });
         if (bl == "hamburg") return Hamburg;
@@ -33,7 +35,7 @@ namespace CS{
     //Helper method converting a string encoding a subject into the suiting enum.
     Subject parse_subject(std::string s) {
         ///Convert the string to lower case:
-        std::for_each(s.begin(), s.end(), [](char & c){
+        std::for_each(s.begin(), s.end(), [](char &c) {
             c = std::tolower(c);
         });
         if (s == "mathematik") return Mathematik;
@@ -61,11 +63,33 @@ namespace CS{
         if (s == "russisch") return Russisch;
         if (s == "niederländisch") return Niederlaendisch;
         if (s == "chinesisch") return Chinesisch;
-        else std::cout<<"subject not identified, name was"<<s<<std::endl;
+        else std::cout << "subject not identified, name was" << s << std::endl;
     }
 
-    //TODO: Add some safety checks in this function
-    void GraphCreator::init_from_json(std::ifstream & pupil_file, std::ifstream & student_file) {
+    CostType parse_cost_type(std::string s) {
+        std::for_each(s.begin(), s.end(), [](char &c) {
+            c = std::tolower(c);
+        });
+        if (s == "bundeslandbonus") return BundeslandBonus;
+        if (s == "fachuebereinstimmung") return FachUebereinstimmung;
+        if (s == "wartezeitbonus") return WaitingTimeBonus;
+    }
+
+    double get_day_difference_from_today(const std::string &date) {
+        static constexpr unsigned SECONDS_IN_A_DAY = 86400;
+        //Get time now
+        std::time_t now = std::time(nullptr);
+        //Convert string into time_t
+        std::tm t = {};
+        std::istringstream ss(date);
+        ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
+        //Compute the time difference
+        return std::difftime(std::mktime(&t), now) / SECONDS_IN_A_DAY;
+    }
+
+
+    void GraphCreator::init_from_json(std::ifstream &pupil_file, std::ifstream &student_file,
+                                      std::ifstream &balancing_coefficients) {
         json pupil_data_file, student_data_file;
         //Initialize the json object:
         pupil_file >> pupil_data_file;
@@ -73,28 +97,39 @@ namespace CS{
         //Build pupils and students with the data in the json file.
         _nodes.create_pupils(pupil_data_file.size());
         unsigned pupil_count{0u};
-        for (auto const & pupil_json_data : pupil_data_file) {
-            auto & pupil_data = _nodes.pupil(pupil_count).data();
+        for (auto const &pupil_json_data : pupil_data_file) {
+            auto &pupil_data = _nodes.pupil(pupil_count).data();
+            if (not pupil_json_data["isActive"]) {
+                //This pupil cannot be matched currently..
+                continue;
+            }
             ///bundesland not yet featured
             //pupil_data.bundesland = parse_bundesland(pupil_json_data["Bundesland"]);
             pupil_data.input_file_id = pupil_json_data["id"];
             pupil_data.grade = pupil_json_data["grade"];
-            for (auto const & fach : pupil_json_data["subjects"]) {
+            pupil_data.waiting_days = get_day_difference_from_today(pupil_json_data["createdAt"]);
+            for (auto const &fach : pupil_json_data["subjects"]) {
                 pupil_data.requested_subjects.emplace_back(parse_subject(fach["name"]));
             }
             pupil_count++;
         }
         _nodes.create_college_students(student_data_file.size());
         unsigned student_count{0u};
-        for (auto const & student_json_data : student_data_file) {
-            auto & student_data = _nodes.college_student(student_count).data();
+        for (auto const &student_json_data : student_data_file) {
+            auto &student_data = _nodes.college_student(student_count).data();
+            if (not student_json_data["isActive"]) {
+                //This student cannot be matched currently
+                continue;
+            }
+            ///bundesland not yet featured
             //student_data.bundesland = parse_bundesland(student_json_data["Bundesland"]);
+            student_data.waiting_days = get_day_difference_from_today(student_json_data["createdAt"]);
             student_data.input_file_id = student_json_data["id"];
-            for (auto const & offered_sub : student_json_data["subjects"]) {
+            for (auto const &offered_sub : student_json_data["subjects"]) {
                 Subject const subject = parse_subject(offered_sub["name"]);
                 GradeRange range;
                 //Currently only with min and max
-                unsigned min,max;
+                unsigned min, max;
                 if (offered_sub.find("grade") == std::end(offered_sub)) {
                     //Assume that in this case we have all grades
                     min = MIN_POSSIBLE_GRADE;
@@ -115,6 +150,8 @@ namespace CS{
         create_edges();
         //Cache the edge costs:
         init_edge_costs();
+        //balance the edge costs
+        balance_edge_costs(balancing_coefficients);
     }
 
     void GraphCreator::init_edge_costs() {
@@ -123,19 +160,54 @@ namespace CS{
         edge_cost_computer.add_fachuebereinstimmung();
         edge_cost_computer.add_waiting_time_bonus();
         //Iterate over all edges and cache the costs which are computed by the edge cost computer.
-        for (auto & edge : _edges){
+        for (auto &edge : _edges) {
             edge.cost = edge_cost_computer.compute_edge_cost(
                     _nodes.college_student(edge.college_student_id), _nodes.pupil(edge.pupil_id));
         }
     }
 
     void GraphCreator::create_edges() {
-        for (auto const & pupil : _nodes.pupils()){
-            for (auto const & student : _nodes.college_students()) {
+        for (auto const &pupil : _nodes.pupils()) {
+            for (auto const &student : _nodes.college_students()) {
                 if (pupil.accepts(student) and student.accepts(pupil)) {
                     _edges.emplace_back(pupil.id(), student.id());
                 }
             }
+        }
+    }
+
+    void GraphCreator::balance_edge_costs(std::ifstream &balancing_coefficient_file) {
+        json balancing_coeff_json;
+        //Initialize the json object:
+        balancing_coefficient_file >> balancing_coeff_json;
+        std::map<CostType, double> cost_coefficients_by_type;
+        std::map<CostType, double> total_edge_costs_by_type;
+        //Collect the coefficients in the json file:
+        for (auto it = balancing_coeff_json.begin(); it != balancing_coeff_json.end(); ++it) {
+            CostType const cost_type = parse_cost_type(it.key());
+            cost_coefficients_by_type.emplace(cost_type, it.value());
+        }
+        //Compute the fraction of the total cost that is currently consumed by each cost component:
+        double total_cost{0.};
+        for (auto const &[type, coeff] : cost_coefficients_by_type) {
+            double specific_cost_total{0.};
+            for (auto const &edge : edges()) {
+                auto const &student = nodes().college_student(edge.college_student_id);
+                auto const &pupil = nodes().pupil(edge.pupil_id);
+                auto const current_cost = edge_cost_computer.get_specific_edge_cost(student, pupil, type);
+                total_cost += current_cost;
+                specific_cost_total += current_cost;
+            }
+            total_edge_costs_by_type[type] = specific_cost_total;
+        }
+        if (total_cost == 0.) return;
+        //Now adapt the coefficients:
+        for (auto const &[type, cost] : total_edge_costs_by_type) {
+            if (cost == 0.) continue;
+            auto const current_coefficient = cost / total_cost;
+            if (current_coefficient == 0.) continue;
+            auto const adaption_factor = cost_coefficients_by_type[type] / current_coefficient;
+            edge_cost_computer.set_cost_coefficient(type, adaption_factor * edge_cost_computer.cost_coefficient(type));
         }
     }
 }

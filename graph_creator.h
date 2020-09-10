@@ -23,10 +23,14 @@ namespace CS {
          * Main function of the Graph Creator.
          * @param pupil_file A json file which describes the pupils of the instance
          * @param student_file A json file which described the students of the instance
+         * @param balancing_coefficients A json file that describes the fraction of the total cost that
+         * each cost component should contribute.
          * Given the json files this function constructs all students and pupils and
-         * edges between them. Further, costs are initialized.
+         * edges between them. Further, costs are initialized and balanced.
+         * @note The coefficients in the last file should all be between 0 and 1 and add up to 1.
          */
-        void init_from_json(std::ifstream & pupil_file, std::ifstream & student_file);
+        void
+        init_from_json(std::ifstream &pupil_file, std::ifstream &student_file, std::ifstream &balancing_coefficients);
 
         /**
          * @return The id of the virtual source node s in the min cost flow instance.
@@ -65,6 +69,15 @@ namespace CS {
          * @brief: Initializes the costs of all edges between students and pupils.
          */
         void init_edge_costs();
+
+        /**
+         * This function adapts the edge costs in order to achieve given coefficients.
+         * E.g. if the input file specifies that 90% of the total costs should be reserved for matching subjects,
+         * then the coefficients of the edge cost computer will be adapted accordingly.
+         * @param balancing_coefficients Input file stream which specifies the fraction of the total
+         * that should be achieved by every cost component.
+         */
+        void balance_edge_costs(std::ifstream & balancing_coefficients);
 
         //Container for nodes and edges
         std::vector<Edge> _edges;
