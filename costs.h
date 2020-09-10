@@ -110,8 +110,8 @@ namespace CS{
                 for (auto const & offered_subject : student.data().offered_subjects) {
                     for (auto const & requested_subject : pupil.data().requested_subjects) {
                         if (requested_subject.subject == offered_subject.subject) {
-                            //Nice! We have a matching subject. Add the product of the preference values.
-                            retval += offered_subject.preference_value * requested_subject.preference_value;
+                            //Nice! We have a matching subject. Add the sum of the preference values.
+                            retval += offered_subject.preference_value + requested_subject.preference_value;
                         }
                     }
                 }
