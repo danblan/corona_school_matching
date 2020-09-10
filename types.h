@@ -112,7 +112,7 @@ namespace CS {
         struct DataIF {
             Bundesland bundesland = Bundesland::Invalid;
             ID input_file_id;
-            unsigned waiting_days = 0;
+            double waiting_days = 0; //Want have also fractions of a day, therefore double..
         };
 
         inline explicit NodeIF(ID id): _id(id){ }
