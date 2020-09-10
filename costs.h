@@ -119,9 +119,15 @@ namespace CS{
             });
         }
 
+        /**
+         * Function to add costs for waiting time.
+         * @note This function should only be called once, multiple calls will not result in creation of
+         * multiple cost components.
+         */
         inline void add_waiting_time_bonus() {
             add_cost_component(CostType::WaitingTimeBonus,
                     [] (const CollegeStudent & student, const Pupil & pupil) {
+                //Add the sum of the waiting days.
                 return static_cast<CostType>(student.data().waiting_days + pupil.data().waiting_days);
             });
         }
