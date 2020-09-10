@@ -41,6 +41,32 @@ namespace CS{
         }
 
         /**
+         * @return The coefficient of the cost component of type @param type.
+         */
+        [[nodiscard]] inline double cost_coefficient(CostType type) const {
+            auto it = cost_component_by_type.find(type);
+            if (it == std::end(cost_component_by_type)) {
+                return 0.;
+            } else {
+                return cost_components_with_coefficients[(*it).second].first;
+            }
+        }
+
+        /**
+         * @return The cost of type @param type on an edge between @param student and @param pupil.
+         */
+        [[nodiscard]] inline CostValue get_specific_edge_cost(const CollegeStudent & student, const Pupil & pupil,
+                CostType type) const {
+            auto it = cost_component_by_type.find(type);
+            if (it == std::end(cost_component_by_type)) {
+                return 0.;
+            } else {
+                auto & [coefficient, raw_cost_component] = cost_components_with_coefficients[(*it).second];
+                return coefficient * raw_cost_component(student, pupil);
+            }
+        }
+
+        /**
          * Function to set/adapt the coefficient of a cost component of type @param type
          * @param coefficient The new coefficient of the cost component.
          */
