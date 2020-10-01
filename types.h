@@ -215,7 +215,15 @@ namespace CS {
             return _pupils;
         }
 
+        [[nodiscard]] inline std::vector<Pupil> & pupils(){
+            return _pupils;
+        }
+
         [[nodiscard]] inline  const std::vector<CollegeStudent> & college_students() const {
+            return _students;
+        }
+
+        [[nodiscard]] inline std::vector<CollegeStudent> & college_students(){
             return _students;
         }
 
