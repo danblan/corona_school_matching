@@ -22,7 +22,7 @@ namespace CS {
             boost::property < boost::vertex_predecessor_t, Traits::edge_descriptor > > > > ,
     boost::property < boost::edge_capacity_t, long,
             boost::property < boost::edge_residual_capacity_t, long,
-                    boost::property <boost::edge_weight_t, double,
+                    boost::property <boost::edge_weight_t, int,
                     boost::property < boost::edge_reverse_t, Traits::edge_descriptor > > > > > Graph;
 
     ///Enum for all subjects
