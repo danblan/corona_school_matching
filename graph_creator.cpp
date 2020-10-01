@@ -84,25 +84,38 @@ namespace CS {
         std::istringstream ss(date);
         ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
         //Compute the time difference
-        return std::difftime(std::mktime(&t), now) / SECONDS_IN_A_DAY;
+        return std::difftime(now, std::mktime(&t)) / SECONDS_IN_A_DAY;
+    }
+
+    template <typename T>
+    inline bool contains(const std::vector<T> &vec, T const &elem) {
+        for (auto const & t : vec) {
+            if (t == elem) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
     void GraphCreator::init_from_json(std::ifstream &pupil_file, std::ifstream &student_file,
-                                      std::ifstream &balancing_coefficients) {
+                                      std::ifstream &balancing_coefficients,
+                                      std::optional<std::vector<std::string>> const & pupil_uuids,
+                                      std::optional<std::vector<std::string>> const & student_uuids) {
         json pupil_data_file, student_data_file;
         //Initialize the json object:
         pupil_file >> pupil_data_file;
         student_file >> student_data_file;
         //Build pupils and students with the data in the json file.
-        _nodes.create_pupils(pupil_data_file.size());
+        _nodes.pupils().reserve(pupil_data_file.size());
         unsigned pupil_count{0u};
         for (auto const &pupil_json_data : pupil_data_file) {
-            auto &pupil_data = _nodes.pupil(pupil_count).data();
-            if (not pupil_json_data["isActive"]) {
+            if ((not pupil_uuids) or (not contains<std::string>(*pupil_uuids, pupil_json_data["uuid"]))) {
                 //This pupil cannot be matched currently..
                 continue;
             }
+            _nodes.create_pupils(1u);
+            auto &pupil_data = _nodes.pupil(pupil_count).data();
             ///bundesland not yet featured
             //pupil_data.bundesland = parse_bundesland(pupil_json_data["Bundesland"]);
             pupil_data.input_file_id = pupil_json_data["id"];
@@ -113,14 +126,16 @@ namespace CS {
             }
             pupil_count++;
         }
-        _nodes.create_college_students(student_data_file.size());
+
+        _nodes.college_students().reserve(student_data_file.size());
         unsigned student_count{0u};
         for (auto const &student_json_data : student_data_file) {
-            auto &student_data = _nodes.college_student(student_count).data();
-            if (not student_json_data["isActive"]) {
+            if ((not student_uuids) or (not contains<std::string>(*student_uuids, student_json_data["uuid"]))) {
                 //This student cannot be matched currently
                 continue;
             }
+            _nodes.create_college_students(1u);
+            auto &student_data = _nodes.college_student(student_count).data();
             ///bundesland not yet featured
             //student_data.bundesland = parse_bundesland(student_json_data["Bundesland"]);
             student_data.waiting_days = get_day_difference_from_today(student_json_data["createdAt"]);

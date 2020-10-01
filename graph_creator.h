@@ -30,7 +30,8 @@ namespace CS {
          * @note The coefficients in the last file should all be between 0 and 1 and add up to 1.
          */
         void
-        init_from_json(std::ifstream &pupil_file, std::ifstream &student_file, std::ifstream &balancing_coefficients);
+        init_from_json(std::ifstream &pupil_file, std::ifstream &student_file, std::ifstream &balancing_coefficients,
+                std::optional<std::vector<std::string>> const & pupil_uuids, std::optional<std::vector<std::string>> const & student_uuids);
 
         /**
          * @return The id of the virtual source node s in the min cost flow instance.
