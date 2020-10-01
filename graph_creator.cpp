@@ -160,20 +160,20 @@ namespace CS {
             }
             student_count++;
         }
-
         //Create edges:
         create_edges();
-        //Cache the edge costs:
-        init_edge_costs();
-        //balance the edge costs
-        balance_edge_costs(balancing_coefficients);
-    }
-
-    void GraphCreator::init_edge_costs() {
         //Initialize the cost components that are used currently:
         edge_cost_computer.add_bundesland_bonus();
         edge_cost_computer.add_fachuebereinstimmung();
         edge_cost_computer.add_waiting_time_bonus();
+        //balance the edge costs
+        balance_edge_costs(balancing_coefficients);
+        //Cache the edge costs:
+        init_edge_costs();
+    }
+
+    void GraphCreator::init_edge_costs() {
+
         //Iterate over all edges and cache the costs which are computed by the edge cost computer.
         for (auto &edge : _edges) {
             edge.cost = edge_cost_computer.compute_edge_cost(
