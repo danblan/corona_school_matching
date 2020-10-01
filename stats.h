@@ -32,6 +32,8 @@ namespace CS {
         }
     }
 
+    //TODO: Add stats for waiting days, more details on the number of matched subjects
+    // and bundesland, cost distributiion, size of a maximum matching etc..
     struct Stats {
         double average_num_matched_subjects = 0.;
         unsigned number_of_matches = 0;
