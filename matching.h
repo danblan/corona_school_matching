@@ -135,9 +135,9 @@ namespace CS {
             rev[reverse_edge_descriptor] = edge_descriptor;
             capacity[edge_descriptor] = cap;
             capacity[reverse_edge_descriptor] = 0;
-            weight[edge_descriptor] = static_cast<int>(100 * cost);
+            weight[edge_descriptor] = static_cast<int>(cost);
             //Cost of the reverse edge must be inverted!
-            weight[reverse_edge_descriptor] = -static_cast<int>(100 * cost);
+            weight[reverse_edge_descriptor] = -static_cast<int>(cost);
             residual_capacity[edge_descriptor] = cap;
             residual_capacity[reverse_edge_descriptor] = 0;
             edge_to_edge_descriptor[{tail, head}] = edge_descriptor;
@@ -162,6 +162,13 @@ namespace CS {
                 compute_max_cost_matching_cycle_canceling(gc, edge_to_edge_descriptor, g, rev, residual_capacity, add_edge):
                 compute_max_cost_matching_successive_shortest_paths(gc, g, add_edge, additional_cost) - successive_flow_value * additional_cost;
 
+        ///Store the computed matching edges:
+        for (auto const & edge: gc.edges()) {
+            ID const college_student_id = edge.college_student_id + gc.nodes().pupils().size();
+            if (residual_capacity[edge_to_edge_descriptor[{edge.pupil_id,college_student_id}]] == 0){
+                matching_edges.push_back(edge);
+            }
+        }
         ///Invert the flow cost, because we computed a min cost flow for the negative costs.
         return  -inverted_flow_cost;
     }
