@@ -135,9 +135,9 @@ namespace CS {
             rev[reverse_edge_descriptor] = edge_descriptor;
             capacity[edge_descriptor] = cap;
             capacity[reverse_edge_descriptor] = 0;
-            weight[edge_descriptor] = cost;
+            weight[edge_descriptor] = static_cast<int>(100 * cost);
             //Cost of the reverse edge must be inverted!
-            weight[reverse_edge_descriptor] = -cost;
+            weight[reverse_edge_descriptor] = -static_cast<int>(100 * cost);
             residual_capacity[edge_descriptor] = cap;
             residual_capacity[reverse_edge_descriptor] = 0;
             edge_to_edge_descriptor[{tail, head}] = edge_descriptor;
