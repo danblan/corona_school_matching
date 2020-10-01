@@ -125,7 +125,7 @@ namespace CS {
         boost::property_map<Graph, boost::edge_reverse_t>::type rev = get(boost::edge_reverse, g);
         boost::property_map<Graph, boost::edge_weight_t>::type weight = get(boost::edge_weight, g);
         std::map<std::pair<ID, ID>, Graph::edge_descriptor> edge_to_edge_descriptor;
-        CostValue additional_cost = algorithm == CycleCanceling ? 0. : maximum_edge_weight(gc.edges());
+        CostValue additional_cost = algorithm == CycleCanceling ? 0. : 2 * maximum_edge_weight(gc.edges());
         ///Lambda function to add an edge in the boost graph (with its residual edge, weight and capacity).
         ///This way we avoid duplicate code. (capacity of the edge is set to 1 as default)
         auto add_edge = [&](ID tail, ID head, double cost, unsigned cap = 1) {
