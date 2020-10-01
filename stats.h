@@ -44,6 +44,7 @@ namespace CS {
      */
     void dump_matching_edges_into_json(const std::vector<Edge> & edges, const GraphCreator & gc) {
         json output_json;
+        unsigned num_total_unmatched_pupil_subjects{0u};
         for (auto const & edge : edges) {
             //Collect the offered and requested subjects and write them into a json file.
             std::vector<Subject> student_subjects;
@@ -54,9 +55,19 @@ namespace CS {
             for (auto const &requested_sub : gc.nodes().pupils()[edge.pupil_id].data().requested_subjects) {
                 pupil_subjects.push_back(requested_sub.subject);
             }
+            for (auto const & sub : pupil_subjects) {
+                bool subjectmatched = false;
+                for (auto const & student_sub : student_subjects) {
+                    if (sub == student_sub)subjectmatched = true;
+                }
+                if (not subjectmatched) {
+                    num_total_unmatched_pupil_subjects++;
+                }
+            }
             output_json.push_back({{"student subjects:",
                                    student_subjects}, {"pupil subjects:", pupil_subjects}});
         }
+        std::cout<<num_total_unmatched_pupil_subjects<<std::endl;
         std::ofstream out("../examples/first_result.json");
         out<<output_json;
     }
