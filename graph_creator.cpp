@@ -13,23 +13,23 @@ namespace CS {
         std::for_each(bl.begin(), bl.end(), [](char &c) {
             c = std::tolower(c);
         });
-        if (bl == "hamburg") return Hamburg;
-        if (bl == "berlin") return Berlin;
-        if (bl == "brandenburg") return Brandenburg;
-        if (bl == "bremen") return Bremen;
-        if (bl == "rheinland-pfalz") return RheinlandPfalz;
-        if (bl == "nordrhein-westfahlen") return NordrheinWestfalen;
-        if (bl == "saarland") return Saarland;
-        if (bl == "sachsen") return Sachsen;
-        if (bl == "sachsen-anhalt") return SachsenAnhalt;
-        if (bl == "bayern") return Bayern;
-        if (bl == "baden-württemberg") return BadenWuerttemberg;
-        if (bl == "hessen") return Hessen;
-        if (bl == "niedersachsen") return Niedersachsen;
-        if (bl == "thüringen") return Thueringen;
-        if (bl == "schleswig-holstein") return SchleswigHolstein;
-        if (bl == "mecklemburg-vorpommern") return MecklemburgVorpommern;
-        return Bayern;
+        if (bl == "bb") return Brandenburg;
+        if (bl == "be") return Berlin;
+        if (bl == "bw") return BadenWuerttemberg;
+        if (bl == "by") return Bayern;
+        if (bl == "hb") return Bremen;
+        if (bl == "he") return Hessen;
+        if (bl == "hh") return Hamburg;
+        if (bl == "mv") return MecklemburgVorpommern;
+        if (bl == "ni") return Niedersachsen;
+        if (bl == "nw") return NordrheinWestfalen;
+        if (bl == "rp") return RheinlandPfalz;
+        if (bl == "sh") return SchleswigHolstein;
+        if (bl == "sl") return Saarland;
+        if (bl == "sn") return Sachsen;
+        if (bl == "st") return SachsenAnhalt;
+        if (bl == "th") return Thueringen;
+        return Invalid;
     }
 
     //Helper method converting a string encoding a subject into the suiting enum.
@@ -137,7 +137,7 @@ namespace CS {
             _nodes.create_college_students(1u);
             auto &student_data = _nodes.college_student(student_count).data();
             ///bundesland not yet featured
-            //student_data.bundesland = parse_bundesland(student_json_data["Bundesland"]);
+            student_data.bundesland = parse_bundesland(student_json_data["state"]);
             student_data.waiting_days = get_day_difference_from_today(student_json_data["createdAt"]);
             student_data.input_file_id = student_json_data["id"];
             for (auto const &offered_sub : student_json_data["subjects"]) {
