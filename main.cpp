@@ -5,20 +5,6 @@
 #include "stats.h"
 using json = nlohmann::json;
 
-void write_example_into_json() {
-    json example = {
-            {"students", {
-                    {{"Bundesland", "NRW"}, {"Fächer",{{ {"Fach","Deutsch"},{"Klassenstufe", {5,6,7,8}}}}}},
-                    {{"Bundesland", "RLP"}, {"Fach", "Mathe"}}}
-            },
-            {"pupils", {
-                    {{"Bundesland", "Hamburg"}, {"Klassenstufe", 6}},
-                    {{"Bundesland", "RLP"}, {"Klassenstufe", 5}}}
-            }
-    };
-    std::ofstream out("../examples/first.json");
-    out<<example;
-}
 
 std::vector<std::string> get_uuids_of_pupils(std::ifstream & pupils_file) {
     std::vector<std::string> retval;
@@ -57,20 +43,20 @@ std::vector<std::string> get_uuids_of_students(std::ifstream & pupils_file) {
     }
     return retval;
 }
-int main() {
+int main(int argc, char * argv[]) {
     //READ DATA AND CONSTRUCT GRAPH
-    ///Local test:
+    if (argc != 4) {
+        std::cout<<"Wrong number of input files, we need 3 of them!"<<std::endl;
+        return EXIT_FAILURE;
+    }
     CS::GraphCreator gc;
-    std::ifstream pupfstream("C:/Users/danie/CLionProjects/corona_school_matching/examples/20_08_2020_Export_2/20_08_2020_Export_2/datasets/20_08_2020_22_09_44/tutees.json");
-    std::ifstream stufstream("C:/Users/danie//CLionProjects/corona_school_matching/examples/20_08_2020_Export_2/20_08_2020_Export_2/datasets/20_08_2020_22_09_44/tutors.json");
-    std::ifstream pupil_csv("C:/Users/danie/Downloads/data/data/matchings/04_08_2020/input/pupils.csv");
-    std::ifstream student_csv("C:/Users/danie/Downloads/data/data/matchings/04_08_2020/input/students_upper_bound.csv");
-    std::ifstream balancing_coeff("C:/Users/danie/CLionProjects/corona_school_matching/balancing_coefficients.json");
-    auto pupil_uuids = get_uuids_of_pupils(pupil_csv);
-    auto student_uuids = get_uuids_of_students(student_csv);
-    gc.init_from_json(pupfstream, stufstream, balancing_coeff, pupil_uuids, student_uuids);
+    ///We assume that the first file encodes the pupils, the second one the students and the third one the balancing coefficients.
+    std::ifstream pupil_input_file_stream(argv[1]);
+    std::ifstream student_input_file_stream(argv[2]);
+    std::ifstream balancing_coefficients(argv[3]);
+    gc.init_from_json(pupil_input_file_stream, student_input_file_stream, balancing_coefficients, std::nullopt, std::nullopt);
     std::vector<CS::Edge> matching_edges;
-    std::cout<< CS::compute_max_cost_matching(gc, matching_edges, CS::MatchingAlgorithm::SuccessiveShortestPath)<<std::endl;
+    auto const matching_cost = CS::compute_max_cost_matching(gc, matching_edges, CS::MatchingAlgorithm::SuccessiveShortestPath);
     CS::test_matching_valid(matching_edges, gc.nodes());
     CS::dump_matching_edges_into_json(matching_edges, gc);
     //ADAPT PRICES MAYBE AND RESTART
