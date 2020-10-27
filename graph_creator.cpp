@@ -204,15 +204,19 @@ namespace CS {
         }
         //Compute the fraction of the total cost that is currently consumed by each cost component:
         double total_cost{0.};
+        std::map<CostType, unsigned> num_edges_with_type_data;
         for (auto const &[type, coeff] : cost_coefficients_by_type) {
             double specific_cost_total{0.};
+            unsigned edges_with_type_data = 0;
             for (auto const &edge : edges()) {
                 auto const &student = nodes().college_student(edge.college_student_id);
                 auto const &pupil = nodes().pupil(edge.pupil_id);
                 auto const current_cost = edge_cost_computer.get_specific_edge_cost(student, pupil, type);
                 total_cost += current_cost;
                 specific_cost_total += current_cost;
+                if (current_cost > 0.) ++edges_with_type_data;
             }
+            num_edges_with_type_data[type] = edges_with_type_data;
             total_edge_costs_by_type[type] = specific_cost_total;
         }
         if (total_cost == 0.) return;
@@ -220,8 +224,9 @@ namespace CS {
         for (auto const &[type, cost] : total_edge_costs_by_type) {
             if (cost == 0.) continue;
             auto const current_coefficient = cost / total_cost;
-            if (current_coefficient == 0.) continue;
-            auto const adaption_factor = cost_coefficients_by_type[type] / current_coefficient;
+            auto adaption_factor = cost_coefficients_by_type[type] / current_coefficient;
+            auto const relative_num_edges_with_type_data = double(num_edges_with_type_data[type]) / edges().size();
+            adaption_factor *= relative_num_edges_with_type_data;
             edge_cost_computer.set_cost_coefficient(type, adaption_factor * edge_cost_computer.cost_coefficient(type));
         }
     }
