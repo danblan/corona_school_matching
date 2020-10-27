@@ -110,14 +110,14 @@ namespace CS {
         _nodes.pupils().reserve(pupil_data_file.size());
         unsigned pupil_count{0u};
         for (auto const &pupil_json_data : pupil_data_file) {
-            if ((not pupil_uuids) or (not contains<std::string>(*pupil_uuids, pupil_json_data["uuid"]))) {
+            if (pupil_uuids and not contains<std::string>(*pupil_uuids, pupil_json_data["uuid"])) {
                 //This pupil cannot be matched currently..
                 continue;
             }
             _nodes.create_pupils(1u);
             auto &pupil_data = _nodes.pupil(pupil_count).data();
             ///bundesland not yet featured
-            //pupil_data.bundesland = parse_bundesland(pupil_json_data["Bundesland"]);
+            pupil_data.bundesland = parse_bundesland(pupil_json_data["state"]);
             pupil_data.input_file_id = pupil_json_data["id"];
             pupil_data.grade = pupil_json_data["grade"];
             pupil_data.waiting_days = get_day_difference_from_today(pupil_json_data["createdAt"]);
@@ -130,7 +130,7 @@ namespace CS {
         _nodes.college_students().reserve(student_data_file.size());
         unsigned student_count{0u};
         for (auto const &student_json_data : student_data_file) {
-            if ((not student_uuids) or (not contains<std::string>(*student_uuids, student_json_data["uuid"]))) {
+            if ( student_uuids and not contains<std::string>(*student_uuids, student_json_data["uuid"])) {
                 //This student cannot be matched currently
                 continue;
             }
