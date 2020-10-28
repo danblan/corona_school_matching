@@ -58,6 +58,11 @@ namespace CS {
          */
         [[nodiscard]] inline NodeContainer const & nodes() const {return _nodes;}
 
+        /**
+         * @return A const reference to the cost computer.
+         */
+        [[nodiscard]] inline EdgeCostComputer const & cost_computer() const {return edge_cost_computer;}
+
 
     private:
 
