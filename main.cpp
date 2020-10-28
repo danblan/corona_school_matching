@@ -59,6 +59,7 @@ int main(int argc, char * argv[]) {
     auto const matching_cost = CS::compute_max_cost_matching(gc, matching_edges, CS::MatchingAlgorithm::SuccessiveShortestPath);
     CS::test_matching_valid(matching_edges, gc.nodes());
     CS::dump_matching_edges_into_json(matching_edges, gc);
+    CS::dump_stats(matching_edges, gc, matching_cost);
     //ADAPT PRICES MAYBE AND RESTART
     return 0;
 }
