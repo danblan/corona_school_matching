@@ -45,8 +45,8 @@ std::vector<std::string> get_uuids_of_students(std::ifstream & pupils_file) {
 }
 int main(int argc, char * argv[]) {
     //READ DATA AND CONSTRUCT GRAPH
-    if (argc != 4) {
-        std::cout<<"Wrong number of input files, we need 3 of them!"<<std::endl;
+    if (argc != 6) {
+        std::cout<<"Wrong number of input files, we need 5 of them!"<<std::endl;
         return EXIT_FAILURE;
     }
     CS::GraphCreator gc;
@@ -58,8 +58,10 @@ int main(int argc, char * argv[]) {
     std::vector<CS::Edge> matching_edges;
     auto const matching_cost = CS::compute_max_cost_matching(gc, matching_edges, CS::MatchingAlgorithm::SuccessiveShortestPath);
     CS::test_matching_valid(matching_edges, gc.nodes());
-    CS::dump_matching_edges_into_json(matching_edges, gc);
-    CS::dump_stats(matching_edges, gc, matching_cost);
+    ///The fourth file should encode the json output file for the matches
+    CS::dump_matching_edges_into_json(matching_edges, gc, std::string(argv[4]));
+    ///The fifth file should encode the json output file for the stats
+    CS::dump_stats(matching_edges, gc, matching_cost, std::string(argv[5]));
     //ADAPT PRICES MAYBE AND RESTART
     return 0;
 }

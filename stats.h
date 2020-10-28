@@ -41,15 +41,16 @@ namespace CS {
      * Function that writes the subjects of each pupil and student that are matched into a json file.
      * @param edges The matching edges.
      * @param gc The graph creator containing the information about students and pupils.
+     * @param file_name The name of the json file into which the result is written to.
      */
-    void dump_matching_edges_into_json(const std::vector<Edge> & edges, const GraphCreator & gc) {
+    void dump_matching_edges_into_json(const std::vector<Edge> & edges, const GraphCreator & gc, std::string const & file_name) {
         json output_json;
         for (auto const & edge : edges) {
             output_json.push_back({{"student input_file_id:",
                                    gc.nodes().college_student(edge.college_student_id).data().input_uuid},
                                    {"pupil uuid:",gc.nodes().pupil(edge.pupil_id).data().input_uuid}});
         }
-        std::ofstream out("../examples/first_result.json");
+        std::ofstream out(file_name);
         out<<output_json;
     }
 
@@ -94,7 +95,7 @@ namespace CS {
         }
     }
 
-    void dump_stats(std::vector<Edge> const & matching_edges, const GraphCreator & gc, double matching_cost) {
+    void dump_stats(std::vector<Edge> const & matching_edges, const GraphCreator & gc, double matching_cost, std::string const & file_name) {
         json output_json;
         std::map<Subject, std::string> subject_to_string = {{Deutsch, "Deutsch"}, {Mathematik, "Mathematik"},
                                                                             {Englisch, "Englisch"}, {Physik, "Physik"}, {Chemie, "Chemie"},
@@ -160,7 +161,7 @@ namespace CS {
             output_json.push_back({subject_to_string[key], {{"offered", val}, {"requested", num_subject_requested[key]},
                                                             {"requests fulfilled", num_subject_request_fulfilled[key]}}});
         }
-        std::ofstream out("../examples/first_stats.json");
+        std::ofstream out(file_name);
         out<<output_json;
     }
 }
