@@ -112,6 +112,7 @@ namespace CS {
         struct DataIF {
             Bundesland bundesland = Bundesland::Invalid;
             ID input_file_id;
+            std::string input_uuid;
             double waiting_days = 0; //Want have also fractions of a day, therefore double..
         };
 
