@@ -115,10 +115,11 @@ namespace CS {
                 continue;
             }
             _nodes.create_pupils(1u);
-            auto &pupil_data = _nodes.pupil(pupil_count).data();
+            auto &pupil_data = _nodes.pupils().back().data();
             ///bundesland not yet featured
             pupil_data.bundesland = parse_bundesland(pupil_json_data["state"]);
             pupil_data.input_file_id = pupil_json_data["id"];
+            pupil_data.input_uuid = pupil_json_data["uuid"];
             pupil_data.grade = pupil_json_data["grade"];
             pupil_data.waiting_days = get_day_difference_from_today(pupil_json_data["createdAt"]);
             for (auto const &fach : pupil_json_data["subjects"]) {
@@ -135,11 +136,12 @@ namespace CS {
                 continue;
             }
             _nodes.create_college_students(1u);
-            auto &student_data = _nodes.college_student(student_count).data();
+            auto &student_data = _nodes.college_students().back().data();
             ///bundesland not yet featured
             student_data.bundesland = parse_bundesland(student_json_data["state"]);
             student_data.waiting_days = get_day_difference_from_today(student_json_data["createdAt"]);
             student_data.input_file_id = student_json_data["id"];
+            student_data.input_uuid = student_json_data["uuid"];
             for (auto const &offered_sub : student_json_data["subjects"]) {
                 Subject const subject = parse_subject(offered_sub["name"]);
                 GradeRange range;
