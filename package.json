@@ -1,0 +1,28 @@
+{
+  "name": "corona_school_matching",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danblan/corona_school_matching.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/danblan/corona_school_matching/issues"
+  },
+  "homepage": "https://github.com/danblan/corona_school_matching#readme",
+  "dependencies": {
+    "boost": "^0.63.1",
+    "boost-lib": "^0.11.3",
+    "node-addon-api": "^3.0.2"
+  }
+}
